@@ -6,7 +6,9 @@ Použití:
       přidá obec; výraz se hledá v údajích osob (výchozí = prvních 5 písmen názvu, aby sedělo i skloňování),
       dotaz pro OpenStreetMap (výchozí = "Název, Česko", když nic nenajde, zkusí Slovensko a další sousední země);
       historickou část obce, kterou mapa nezná, zadej jako celou obec; u víceznačných názvů (Podolí, Dub) přidej sousední obec:
-      "Podolí, Odlochovice" – a ve výpisu vždy zkontroluj okres
+      "Podolí, Odlochovice" – a ve výpisu vždy zkontroluj okres. Našel-li jinou obec stejného jména, spusť pridej znovu
+      s jiným dotazem (třeba "Bošín, Středočeský kraj, Česko" – okres Nominatim někdy „opraví“ na podobné jméno):
+      nový dotaz zahodí staré souřadnice a dohledá je znovu
   mista.py
       dohledá souřadnice u míst, která je ještě nemají (OpenStreetMap Nominatim, 1 dotaz za sekundu),
       a vypíše seznam. Když bod nesedí, opravte lat/lon v data/mista.json ručně.
@@ -101,8 +103,11 @@ def main():
     if len(sys.argv) > 2 and sys.argv[1] == "pridej":
         name = sys.argv[2]
         stem = re.escape(name.split()[0][:5]) if len(name.split()) == 1 else re.escape(name)
-        cache[name] = dict(cache.get(name, {}), re=sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else stem,
-                           dotaz=sys.argv[4] if len(sys.argv) > 4 else f"{name}, Česko")
+        stare = cache.get(name, {})
+        dotaz = sys.argv[4] if len(sys.argv) > 4 else stare.get("dotaz") or f"{name}, Česko"
+        if dotaz != stare.get("dotaz"):   # jiný dotaz = oprava špatně nalezené obce → souřadnice hledat znovu
+            stare = {k: v for k, v in stare.items() if k not in ("lat", "lon", "osm")}
+        cache[name] = dict(stare, re=sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else stem, dotaz=dotaz)
     pozor, nove = [], []   # varování se vypíšou až pod seznamem, aby se v něm neztratila
     for name, e in cache.items():
         if "lat" not in e:

@@ -17,6 +17,17 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
   který v tabulce chybí.
 - Stránka hlavního rodu (`web.json` → `pribeh.rod`) má tlačítko „Přečíst příběh“ na hlavní příběh (stejný cíl jako menu).
 
+**Opravy**
+- `mista.py pridej` s jiným dotazem u už přidaného místa zahodí staré souřadnice a dohledá je znovu – dřív zůstal
+  bod u jiné obce stejného jména (Bošín u Ústí n. O. místo Bošína u Křince) a musel se mazat ručně. Bez nového
+  dotazu `pridej` dotaz i souřadnice ponechá.
+
+**Návody**
+- eBadatelna (SOA Praha) přes Claude in Chrome bez Playwrightu: snímek vykreslit přes celé okno, číst ze snímků
+  obrazovky, výřez ze snímků obrazovky uložených na disk (`portaly.md`).
+- Evangelický sbor může sídlit v jiném kraji než obec (Kopidlno → Bošín, SOA Praha) – hledat obec i v eBadatelně
+  (`matriky.md`, `portaly.md`).
+
 ## 0.9.2 – 7. 11. 2026
 
 **Opravy**

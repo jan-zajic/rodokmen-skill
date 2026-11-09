@@ -146,7 +146,30 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
      1600 px ke čtení stránky a soubor .json smaže).
   3. Jiný náhled nebo výřez z uloženého snímku bez sítě: `python3 -I tools/ebadatelna.py snimek <matrikaId> <snímek>
      pracovni/x.jpg [nahled] [x0,y0,x1,y1]` (archiválie `a-snimek`), dál `vyrez.py` jako u jiných archivů.
-  Bez Playwrightu (Claude in Chrome neumí výsledek uložit do souboru) ať snímek uloží uživatel (snímek obrazovky).
+  **Bez Playwrightu – Claude in Chrome** (vyzkoušeno 2026-11): výsledek JavaScriptu do souboru uložit neumí, ale
+  číst i vyříznout zápis jde ze snímků obrazovky. Archiv tím nedostane žádný dotaz navíc – kreslí se už načtený snímek.
+  1. Otevři adresu snímku, počkej asi 6 s a vykresli snímek přes celé okno (`javascript_tool`; po každé navigaci
+     funkci definuj znovu):
+     ```js
+     window.show=(x0,y0,x1,y1)=>{const im=document.getElementById('scanImage');
+       if(!im||!im.complete||!im.naturalWidth)return 'loading';
+       let c=document.getElementById('ovl');if(!c){c=document.createElement('canvas');c.id='ovl';
+         c.style.cssText='position:fixed;left:0;top:0;z-index:99999;background:#fff';document.body.appendChild(c);}
+       const s=Math.min(innerWidth/(x1-x0),innerHeight/(y1-y0));c.width=(x1-x0)*s;c.height=(y1-y0)*s;
+       c.getContext('2d').drawImage(im,x0,y0,x1-x0,y1-y0,0,0,c.width,c.height);return [im.naturalWidth,im.naturalHeight]};
+     show(0,0,document.getElementById('scanImage').naturalWidth,document.getElementById('scanImage').naturalHeight)
+     ```
+     Pak `screenshot` – celá dvoustrana. Souřadnice v obrazovce přepočítej na pixely snímku (děleno měřítkem
+     `s = min(šířka okna / šířka snímku, výška okna / výška snímku)`) a čti po částech `show(x0,y0,x1,y1)` (sloupec
+     rejstříku, levá a pravá půlka zápisu). Navigace + čekání + `show` + screenshot jdou jedním `browser_batch`.
+  2. Výřez: `screenshot` s `save_to_disk: true` uloží snímek obrazovky do dočasné složky (cestu vypíše) – zkopíruj
+     ho do `pracovni/`. Zápis přes dvoustranu ulož jako dvě půlky a spoj je `magick a.jpg b.jpg +append zapis.jpg`
+     (oříznout na velikost plátna, `-resize x<výška>` srovná výšky). Pak `vyrez.py zapis.jpg <klíč> 0,0,1,1`
+     a `ramecek.py`. V přepisu poznamenej, že výřez je ze snímků obrazovky (nižší rozlišení než originál).
+  3. `odkaz` je pořád `https://ebadatelna.soapraha.cz/d/<matrikaId>/<snímek>`.
+  Jinak ať snímek uloží uživatel (snímek obrazovky).
+- **Hledání podle obce najde i knihy jiných farností**: pole „lokalita“ vrací všechny knihy, které obec uvádějí – tak se
+  najde třeba evangelický sbor (Bošín pro Kopidlno na Jičínsku), který v archivu kraje obce není.
 - Starší snímky bývají z mikrofilmu nebo silně vybledlé – výřez dělej s `--kontrast` (`vyrez.py`, `overit.py`;
   viz `matriky.md`, Čtení písma) a poznamenej to v přepisu.
 - Svazek do `svazky.json` ručně (Ostatní portály, krok 4, klíč `ebad_<matrikaId>`, archiválie `ebad_a_<id>`).

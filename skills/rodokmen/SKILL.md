@@ -76,7 +76,8 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
    hledání v SOA Litoměřice). Když předci žili tam a nemáš nástroje `mcp__…playwright…`, nabídni doplněk
    Playwright: `/plugin install playwright@claude-plugins-official` (dej ho uživateli s `!` jako
    `claude plugin install playwright@claude-plugins-official`), pak restart Claude Code. Jinou možností je Claude
-   in Chrome (`/chrome`), postupy v `portaly.md` jsou ale vyzkoušené s Playwrightem (snímek obrazovky do souboru).
+   in Chrome (`/chrome`): postupy v `portaly.md` jsou vyzkoušené hlavně s Playwrightem (snímek obrazovky do souboru),
+   pro eBadatelnu je tam i postup přes Claude in Chrome (snímek vykreslit přes okno, výřez ze snímků obrazovky).
    Bez prohlížeče ať uživatel posílá snímky obrazovky.
 2. Zeptej se, kde má projekt být (navrhni `~/Rodokmen`), a založ ho:
    `python3 -I SKILL_DIR/tools/novy_projekt.py <složka>`

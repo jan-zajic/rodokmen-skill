@@ -152,6 +152,21 @@ try:
 except Exception as e:  # noqa: BLE001
     ok("main: s Infinity/NaN u jiných míst uloží nové místo bez varování", False, repr(e))
 
+# main(): pridej s novým dotazem u existujícího místa zahodí staré souřadnice a dohledá je znovu
+SPATNY = {"re": "Bošín", "dotaz": "Bošín, Česko", "lat": 50.0327, "lon": 16.195, "osm": "Bošín, okres Ústí nad Orlicí"}
+SPRAVNY = [{"class": "place", "type": "village", "lat": "50.2771", "lon": "15.1155",
+            "display_name": "Bošín, Křinec, okres Nymburk, Středočeský kraj, Česko"}]
+_, cache, dotazy = spust_mista({"Bošín": dict(SPATNY), "Kopidlno": {"re": "Kopid", "lat": 50.33, "lon": 15.27}},
+                               ["pridej", "Bošín", "", "Bošín, Středočeský kraj, Česko"],
+                               {"Bošín, Středočeský kraj, Česko": SPRAVNY})
+ok("pridej: nový dotaz přepočítá souřadnice", cache["Bošín"].get("lat") == 50.2771 and "Nymburk" in cache["Bošín"]["osm"],
+   cache["Bošín"])
+_, cache, dotazy = spust_mista({"Bošín": dict(SPATNY)}, ["pridej", "Bošín"], {})
+ok("pridej: bez nového dotazu souřadnice nechá a nic nehledá", cache["Bošín"].get("lat") == 50.0327 and not dotazy,
+   (cache["Bošín"], dotazy))
+_, cache, dotazy = spust_mista({"Bošín": dict(SPATNY)}, ["pridej", "Bošín", "", "Bošín, Česko"], {})
+ok("pridej: stejný dotaz souřadnice nechá", cache["Bošín"].get("lat") == 50.0327 and not dotazy, (cache["Bošín"], dotazy))
+
 # kontrola.slova_obce(): víceslovné názvy s přídavným jménem na -ích
 spec = importlib.util.spec_from_file_location("kontrola", os.path.join(TOOLS, "kontrola.py"))
 kontrola = importlib.util.module_from_spec(spec)
