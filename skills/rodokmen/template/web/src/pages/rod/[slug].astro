@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PersonLink from '../../components/PersonLink.astro';
 import Record from '../../components/Record.astro';
-import { lines, sublines, people, hypotheses, href, genName, statusClass, lineByK } from '../../lib/data.js';
+import { lines, sublines, people, hypotheses, href, genName, statusClass, lineByK, config } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return [...Object.keys(lines), ...Object.keys(sublines)].map((slug) => ({ params: { slug } }));
@@ -14,12 +14,20 @@ const subs = (l.subs ?? []).map((s) => sublines[s]).filter(Boolean);
 const members = l.people.map((s) => ({ ...people[s], gen: l.gens[s] }));
 const gens = [...new Set(members.map((p) => p.gen))].sort((a, b) => a - b);
 const partnerLine = isSub ? null : lineByK[l.k ^ 1];
+// hlavní rod (web.json → pribeh.rod, výchozí 8) má tlačítko na hlavní příběh (/pribehy/, stejný cíl jako položka menu)
+const mainStory = !isSub && config.maPribeh && l.k === (config.pribeh?.rod ?? 8);
 ---
 <Base title={`Rod ${l.name}`}>
   <p class="crumbs"><a href="/rody/">Rody</a>{parentLine && <> · <a href={href.line(parentLine.slug)}>rod {parentLine.name}</a></>}</p>
   <h1><span style={`display:inline-block;width:.8em;height:.8em;border-radius:50%;background:${l.color};margin-right:.3em`}></span>{l.name}</h1>
   <p class="lead">{l.desc}</p>
-  {l.story && <p><a class="btn" href={`/pribehy/${l.slug}/`}>Přečíst příběh rodu →</a></p>}
+  {(mainStory || l.story) && (
+    <p>
+      {mainStory && <a class="btn" href="/pribehy/">{config.pribeh?.tlacitko || 'Přečíst příběh'} →</a>}
+      {mainStory && l.story && ' '}
+      {l.story && <a class="btn" href={`/pribehy/${l.slug}/`}>Přečíst příběh rodu →</a>}
+    </p>
+  )}
   <p>Rod začíná u <PersonLink slug={l.root} /> ({people[l.root].rel}).
     {partnerLine && people[l.root].spouse && (
       <>{people[l.root].sex === 'M' ? ' Jeho manželka ' : ' Její manžel '}<PersonLink slug={people[l.root].spouse} /> je výchozí osobou

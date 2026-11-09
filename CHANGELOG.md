@@ -15,6 +15,7 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
   „Vedlejší rody“ na /rody/, odkaz ze stránky hlavního rodu.
 - Tabulka „Jak se jméno psalo“ na stránce rodu (`PRAVOPIS` v `osoby.py`); `npm run data` upozorní na zápis člena rodu,
   který v tabulce chybí.
+- Stránka hlavního rodu (`web.json` → `pribeh.rod`) má tlačítko „Přečíst příběh“ na hlavní příběh (stejný cíl jako menu).
 
 ## 0.9.2 – 7. 11. 2026
 
