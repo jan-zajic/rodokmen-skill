@@ -2,6 +2,8 @@
 import site from '../data/site.json';
 
 export const { people, families, lines, stats, issues, hypotheses, docs, config } = site;
+/** Vedlejší rody: rod začínající u vzdálenějšího předka (LINES 16+ v osoby.py). */
+export const sublines = site.sublines ?? {};
 /** Počet rodů slovem pro nadpisy („Osm rodů“). */
 export const linesTitle = (n) => (['Žádný rod', 'Jeden rod', 'Dva rody', 'Tři rody', 'Čtyři rody', 'Pět rodů', 'Šest rodů', 'Sedm rodů', 'Osm rodů'][n] ?? `${n} rodů`);
 export const root = people[site.root];

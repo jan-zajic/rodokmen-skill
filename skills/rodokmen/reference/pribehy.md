@@ -72,3 +72,10 @@ jde později doplnit. `kontrola.py` na to upozorní. Uživateli to nabídni, i k
 - Poctivě: co nevíme, napiš jako otázku nebo domněnku („nejspíš“, „podle rodiny“). Nic nevymýšlej kvůli plynulosti.
 - Na konci kapitola o dnešku: jen jména a vztahy žijících, bez podrobností.
 - Ostatní rody dostanou svůj prostor na stránkách rodů (popis v `LINES`, `HYPOTEZY`) a v zajímavostech.
+
+## Příběhy dalších rodů
+Když má i jiný rod dost materiálu (3+ doložené generace, řemeslo, dům, zajímavá událost), nabídni jeho vlastní příběh:
+`data/pribehy/<slug rodu>.md` (např. `pribehy/hubnerove.md`), formát jako `pribeh.md` (frontmatter `title`, `lead`,
+kapitoly `##`). Postup stejný – koncept nejdřív do chatu, po schválení uložit. Web přidá stránku `/pribehy/<slug>/`
+a tlačítko na stránce rodu. V hlavním příběhu pak rod shrň v pár větách a odkaž na jeho příběh, ať se texty neopakují.
+Funguje i pro vedlejší rody (`LINES` 16+, viz `data.md`). Po přejmenování rodu přejmenuj i soubor.

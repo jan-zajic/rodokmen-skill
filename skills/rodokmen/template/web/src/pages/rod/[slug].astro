@@ -2,27 +2,53 @@
 import Base from '../../layouts/Base.astro';
 import PersonLink from '../../components/PersonLink.astro';
 import Record from '../../components/Record.astro';
-import { lines, people, hypotheses, href, genName, statusClass, lineByK } from '../../lib/data.js';
+import { lines, sublines, people, hypotheses, href, genName, statusClass, lineByK } from '../../lib/data.js';
 
 export function getStaticPaths() {
-  return Object.keys(lines).map((slug) => ({ params: { slug } }));
+  return [...Object.keys(lines), ...Object.keys(sublines)].map((slug) => ({ params: { slug } }));
 }
-const l = lines[Astro.params.slug];
+const l = lines[Astro.params.slug] ?? sublines[Astro.params.slug];
+const isSub = !lines[Astro.params.slug];
+const parentLine = isSub && l.parent ? lines[l.parent] : null;
+const subs = (l.subs ?? []).map((s) => sublines[s]).filter(Boolean);
 const members = l.people.map((s) => ({ ...people[s], gen: l.gens[s] }));
 const gens = [...new Set(members.map((p) => p.gen))].sort((a, b) => a - b);
-const partnerLine = lineByK[l.k ^ 1];
+const partnerLine = isSub ? null : lineByK[l.k ^ 1];
 ---
 <Base title={`Rod ${l.name}`}>
-  <p class="crumbs"><a href="/rody/">Rody</a></p>
+  <p class="crumbs"><a href="/rody/">Rody</a>{parentLine && <> · <a href={href.line(parentLine.slug)}>rod {parentLine.name}</a></>}</p>
   <h1><span style={`display:inline-block;width:.8em;height:.8em;border-radius:50%;background:${l.color};margin-right:.3em`}></span>{l.name}</h1>
   <p class="lead">{l.desc}</p>
+  {l.story && <p><a class="btn" href={`/pribehy/${l.slug}/`}>Přečíst příběh rodu →</a></p>}
   <p>Rod začíná u <PersonLink slug={l.root} /> ({people[l.root].rel}).
     {partnerLine && people[l.root].spouse && (
       <>{people[l.root].sex === 'M' ? ' Jeho manželka ' : ' Její manžel '}<PersonLink slug={people[l.root].spouse} /> je výchozí osobou
         sousedního rodu <a href={href.line(partnerLine.slug)}>{partnerLine.name}</a>; jejich {people[people[l.root].child].sex === 'M' ? 'syn' : 'dcera'} <PersonLink slug={people[l.root].child} />.</>
     )}
   </p>
-  <p class="small muted">Rodokmen je rozdělený do osmi rodů podle osmi pradědečků a prababiček – každý manželský pár proto patří do dvou sousedních rodů.</p>
+  {isSub
+    ? <p class="small muted">Vedlejší rod v rámci rodu {parentLine ? <a href={href.line(parentLine.slug)}>{parentLine.name}</a> : 'předků'}: začíná u vzdálenějšího předka a zahrnuje všechny jeho předky.</p>
+    : <p class="small muted">Rodokmen je rozdělený do osmi rodů podle osmi pradědečků a prababiček – každý manželský pár proto patří do dvou sousedních rodů.</p>}
+  {subs.length > 0 && <p>Vedlejší {subs.length === 1 ? 'rod' : 'rody'}: {subs.map((x, i) => <>{i > 0 && ', '}<a href={href.line(x.slug)}>{x.name}</a></>)}</p>}
+
+  {(l.spelling ?? []).length > 0 && (
+    <>
+      <h2>Jak se jméno psalo</h2>
+      <p class="small">Pravopis příjmení nebyl ustálený – farář psal, jak slyšel, „i“ a „y“ zní stejně. Na webu používáme podobu, kterou psala rodina sama. V tabulce je jméno přesně tak, jak stojí v zápisu.</p>
+      <div class="table-box"><table>
+        <thead><tr><th>Rok</th><th>Zápis</th><th>Psáno</th></tr></thead>
+        <tbody>
+          {l.spelling.map((r) => (
+            <tr>
+              <td class="small">{r.year}</td>
+              <td class="small">{r.rec ? <a href={href.record(r.rec)}>{r.what}</a> : r.what}</td>
+              <td><strong>{r.written}</strong></td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
+    </>
+  )}
 
   {gens.map((g) => (
     <>

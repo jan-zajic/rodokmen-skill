@@ -71,8 +71,10 @@ def main():
         if c not in P:
             err.append(f"SAME: {a} -> {c}, ale osoba {c} neexistuje")
     for k in LINES:
+        if k >= 16 and k in P:   # vedlejší rod: začíná u vzdálenějšího předka (reference/data.md)
+            continue
         if k not in range(8, 16):
-            err.append(f"LINES: rod {k} – rody mají čísla 8 až 15 (pradědečci a prababičky)")
+            err.append(f"LINES: rod {k} – rody mají čísla 8 až 15 (pradědečci a prababičky); vedlejší rod jen u existující osoby 16+")
 
     cited = ({r for p in P.values() for r in p.get("r", [])} | {r for s in SIDE for r in s.get("r", [])}
              | {r for h in ns.get("HYPOTEZY", []) if isinstance(h, dict) for r in h.get("zaznamy", [])})

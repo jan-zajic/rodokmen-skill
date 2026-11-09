@@ -38,7 +38,7 @@ def jload(name, default):
 def load_people():
     ns = {}
     exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
-    for name, default in (("P", {}), ("SIDE", []), ("LINES", {}), ("ISSUES", []), ("HYPOTEZY", []), ("SAME", {})):
+    for name, default in (("P", {}), ("SIDE", []), ("LINES", {}), ("ISSUES", []), ("HYPOTEZY", []), ("SAME", {}), ("PRAVOPIS", {})):
         ns.setdefault(name, default)
     return ns
 
@@ -324,7 +324,7 @@ def main():
 
     lines = {}
     for k, (name, desc) in sorted(LINES.items()):
-        if k not in LINE_COLORS:
+        if k not in LINE_COLORS:   # vedlejší rody (k >= 16) zpracuje blok „sublines“ níže
             continue
         members = [(p["k"], p) for p in people.values() if p["line"] == k]
         members += [(a["k"], p) for p in people.values() for a in p["also"] if a["line"] == k]
@@ -333,6 +333,35 @@ def main():
                                     root=slugs.get(k), people=[p["slug"] for _, p in members],
                                     gens={p["slug"]: gen(kk) for kk, p in members})
     lines = {s: l for s, l in lines.items() if l["root"]}
+
+    # Vedlejší rody: LINES s číslem >= 16 = rod začínající u vzdálenějšího předka s jiným příjmením
+    # (např. 17: praprababička). Členy jsou ten předek a všichni jeho předci. Hlavní rody (8–15) se nemění.
+    # PRAVOPIS = {k: dict(vzor="regex příjmení", radky=[(rok, popis, psano, klíč zápisu nebo None)])} → tabulka na stránce rodu.
+    PRAVOPIS = ns["PRAVOPIS"]
+
+    def spelling(k):
+        return [dict(year=r[0], what=r[1], written=r[2], rec=r[3] if len(r) > 3 and r[3] in recs else None)
+                for r in PRAVOPIS.get(k, {}).get("radky", [])]
+
+    sublines = {}
+    for k, (name, desc) in sorted(LINES.items()):
+        if k < 16 or k not in slugs:
+            continue
+        g = gen(k)
+        within = lambda x: gen(x) >= g and x >> (gen(x) - g) == k
+        members = [(p["k"], p) for p in people.values() if within(p["k"])]
+        members += [(a["k"], p) for p in people.values() for a in p["also"] if within(a["k"])]
+        members.sort(key=lambda x: x[0])
+        main = k >> (g - 3)
+        parent = next((l for l in lines.values() if l["k"] == main), None)
+        sl = slugify(name)
+        sublines[sl] = dict(k=k, slug=sl, name=name, desc=desc, color=LINE_COLORS.get(main, "#999"), root=slugs[k],
+                            people=list(dict.fromkeys(p["slug"] for _, p in members)),
+                            gens={p["slug"]: gen(kk) for kk, p in members}, parent=parent["slug"] if parent else None,
+                            spelling=spelling(k))
+    for l in lines.values():
+        l["spelling"] = spelling(l["k"])
+        l["subs"] = [s["slug"] for s in sublines.values() if s["parent"] == l["slug"]]
     for p in people.values():
         p["lineSlug"] = next((l["slug"] for l in lines.values() if l["k"] == p["line"]), None)
 
@@ -361,10 +390,13 @@ def main():
                        records=[r for r in h.get("zaznamy", []) if r in recs]) for h in ns["HYPOTEZY"]]
 
     has_story = os.path.exists(os.path.join(DATA, "pribeh.md"))
+    # příběhy jednotlivých rodů: data/pribehy/<slug rodu>.md → stránka /pribehy/<slug>/ a odkaz ze stránky rodu
+    for l in list(lines.values()) + list(sublines.values()):
+        l["story"] = os.path.exists(os.path.join(DATA, "pribehy", l["slug"] + ".md"))
     public_cfg = {k: v for k, v in cfg.items() if k != "prihlaseni"}
     public_cfg["maPribeh"] = has_story
     site = dict(config=public_cfg, places=places, root=slugs[1], aliases={a: slugs[a] for a in SAME}, people=people,
-                families=families, records=records, lines=lines,
+                families=families, records=records, lines=lines, sublines=sublines,
                 issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
                 docs=[dict(img=d["img"], caption=d["popis"], people=[slugs[k] for k in d.get("osoby", []) if k in slugs])
                       for d in docs_cfg if os.path.exists(os.path.join(VYREZY, d["img"] + ".jpg"))])
@@ -377,6 +409,13 @@ def main():
         write(os.path.join(gen_dir, dst), strip_comments(re.sub(r"^# .*\n", "", text, count=1)))
     story = os.path.join(DATA, "pribeh.md")
     write(os.path.join(gen_dir, "pribeh.md"), strip_comments(open(story, encoding="utf-8").read()) if has_story else "---\ntitle: Příběh\nlead: ''\n---\n")
+    line_story_dir = os.path.join(gen_dir, "pribehy")
+    if os.path.isdir(line_story_dir):
+        shutil.rmtree(line_story_dir)
+    for l in list(lines.values()) + list(sublines.values()):
+        if l["story"]:
+            write(os.path.join(line_story_dir, l["slug"] + ".md"),
+                  strip_comments(open(os.path.join(DATA, "pribehy", l["slug"] + ".md"), encoding="utf-8").read()))
 
     hrefs = os.path.join(gen_dir, "fan_hrefs.json")
     json.dump({k: f"/osoba/{s}/" for k, s in slugs.items()}, open(hrefs, "w", encoding="utf-8", newline="\n"))
@@ -410,12 +449,28 @@ def main():
           f"zkopírováno {copied} obrázků; přihlášení {'zapnuté' if gated else 'VYPNUTÉ (web je otevřený)'}")
 
     # odkazy v textech, které nikam nevedou (adresa osoby se změní třeba doplněním roku narození: jan-novak → jan-novak-1798)
-    targets = dict(osoba=people, zdroj=recs, rod=lines, rodina=families)
+    targets = dict(osoba=people, zdroj=recs, rod={**lines, **sublines}, rodina=families)
     texts = {f: open(os.path.join(gen_dir, f), encoding="utf-8").read() for f in ("pribeh.md", "zajimavosti.md")}
+    for l in list(lines.values()) + list(sublines.values()):
+        if l["story"]:
+            texts[f"pribehy/{l['slug']}.md"] = open(os.path.join(line_story_dir, l["slug"] + ".md"), encoding="utf-8").read()
     texts["web.json"] = json.dumps(cfg, ensure_ascii=False)
     texts["osoby.py (hypotézy)"] = json.dumps(hypotheses, ensure_ascii=False)
     broken = [(f, m.group(0)) for f, t in texts.items()
               for m in re.finditer(r"/(osoba|zdroj|rod|rodina)/([^/\s)\"'#?<>\]]+)", t) if m.group(2) not in targets[m.group(1)]]
+    # tabulka pravopisu rodu: zápis člena rodu s jeho příjmením, který v tabulce chybí → připomenout doplnění
+    for k, pr in PRAVOPIS.items():
+        l = next((x for x in list(lines.values()) + list(sublines.values()) if x["k"] == k), None)
+        if not l or not pr.get("vzor"):
+            continue
+        rx, have = re.compile(pr["vzor"]), {r[3] for r in pr.get("radky", []) if len(r) > 3}
+        for s in l["people"]:
+            if not rx.search(people[s]["name"]):
+                continue
+            for key in people[s].get("records", []):
+                if key not in have:
+                    print(f"POZOR: rod {l['name']} – zápis {key} ({people[s]['name']}) není v tabulce pravopisu (PRAVOPIS v osoby.py)")
+                    have.add(key)
     for f, link in dict.fromkeys(broken):
         print(f"POZOR: nefunkční odkaz {link}/ v {f} – oprav ho (adresy stránek jsou ve web/src/data/site.json)")
 

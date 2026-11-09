@@ -1,0 +1,29 @@
+---
+// Příběh jednoho rodu: data/pribehy/<slug rodu>.md (export_web.py ho zkopíruje do src/generated/pribehy/).
+import Base from '../../layouts/Base.astro';
+import { lines, sublines, href } from '../../lib/data.js';
+
+export function getStaticPaths() {
+  const stories = import.meta.glob('../../generated/pribehy/*.md', { eager: true });
+  return Object.entries(stories).map(([path, mod]) => {
+    const slug = path.split('/').pop().replace(/\.md$/, '');
+    return { params: { slug }, props: { mod } };
+  });
+}
+const { mod } = Astro.props;
+const { Content, frontmatter } = mod;
+const line = lines[Astro.params.slug] ?? sublines[Astro.params.slug];
+---
+<Base title={frontmatter.title}>
+  <p class="crumbs"><a href="/pribehy/">hlavní příběh</a>{line && <> · <a href={href.line(line.slug)}>rod {line.name}</a></>}</p>
+  <h1>{frontmatter.title}</h1>
+  {frontmatter.lead && <p class="lead">{frontmatter.lead}</p>}
+  <div class="prose"><Content /></div>
+
+  {line && (
+    <div class="next-step">
+      <p><strong>Kdo všechno do rodu patří?</strong> Seznam osob se všemi údaji a zápisy z matrik.</p>
+      <a class="btn" href={href.line(line.slug)}>Rod {line.name} →</a>
+    </div>
+  )}
+</Base>

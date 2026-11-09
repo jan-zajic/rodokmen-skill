@@ -22,7 +22,16 @@ P = {
 
 # Rody = osm větví podle pradědečků a prababiček (čísla 8–15). Doplňte, jakmile je znáte:
 # 8: ("Novákové", "Jedna věta, kdo to byli a odkud – ukáže se na webu u rodu."),
+# Vedlejší rod (volitelně, číslo 16+): rod vzdálenějšího předka s jiným příjmením, na webu jako součást hlavního rodu:
+# 17: ("Dvořákové", "Sedláci z …, rod praprababičky Anny Dvořákové."),
 LINES = {
+}
+
+# Jak se psalo příjmení rodu (volitelně) → tabulka „Jak se jméno psalo“ na stránce rodu. Klíč = číslo rodu z LINES.
+# vzor = regulární výraz příjmení (npm run data upozorní na zápis člena rodu s tímto příjmením, který v tabulce chybí);
+# řádek = (rok, co je to za zápis, jak je jméno napsáno PŘESNĚ podle snímku, klíč zápisu nebo None u rodinného dokladu)
+# 17: dict(vzor=r"Dvořák", radky=[("1873", "sňatek Jana Dvořáka", "Dworžak", "holice_snatek_jan_dvorak_1873")]),
+PRAVOPIS = {
 }
 
 # Příbuzní mimo přímou linii (sourozenci, strýcové…): k = číslo předka, ke kterému patří.

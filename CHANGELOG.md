@@ -6,6 +6,16 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## Nevydáno (fork jan-zajic)
+
+**Nové**
+- Příběhy jednotlivých rodů: `data/pribehy/<slug rodu>.md` → stránka `/pribehy/<slug>/` a tlačítko na stránce rodu
+  (`reference/pribehy.md`, „Příběhy dalších rodů“).
+- Vedlejší rody: `LINES` s číslem 16+ (rod vzdálenějšího předka s jiným příjmením) – vlastní stránka rodu, sekce
+  „Vedlejší rody“ na /rody/, odkaz ze stránky hlavního rodu.
+- Tabulka „Jak se jméno psalo“ na stránce rodu (`PRAVOPIS` v `osoby.py`); `npm run data` upozorní na zápis člena rodu,
+  který v tabulce chybí.
+
 ## 0.9.2 – 7. 11. 2026
 
 **Opravy**

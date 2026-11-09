@@ -36,7 +36,15 @@ P = {
   číslo zápisu, strany či snímku neplatí); číslo převzaté odjinud označ ve faktu zdrojem: `* 1862 Ostřetín čp. 23 (podle stromu)`.
 - `r` klíče zápisů ze `zaznamy.json`. `st` viz `matriky.md`: `doc` přečteno v matrice, `prob` pravděpodobné,
   `fam` od rodiny (i strom, který si rodina vede sama, např. GEDCOM z jejího MyHeritage), `mh` cizí strom z internetu, `unk`.
-- `LINES = {8: ("Novákové", "Kováři z Holic…"), …}` – jen čísla 8–15; název rodu = příjmení v množném čísle. Vyplň hned, jak znáš pradědečka nebo prababičku – bez LINES web neukáže rody a nepřijde rada k příběhu.
+- `LINES = {8: ("Novákové", "Kováři z Holic…"), …}` – hlavní rody mají čísla 8–15; název rodu = příjmení v množném čísle. Vyplň hned, jak znáš pradědečka nebo prababičku – bez LINES web neukáže rody a nepřijde rada k příběhu.
+  **Vedlejší rod** (číslo 16+, např. `17: ("Dvořákové", "…")`): když chce rodina vlastní stránku i pro rod vzdálenějšího
+  předka s jiným příjmením (praprababička, její otec…). Členy jsou ten předek a všichni jeho předci; web ho ukáže na
+  /rody/ v sekci „Vedlejší rody“ a odkáže na něj ze stránky hlavního rodu. Hlavní rody se tím nemění.
+- `PRAVOPIS = {17: dict(vzor=r"Dvořák", radky=[(rok, popis zápisu, jak psáno, klíč zápisu | None), …])}` – tabulka
+  „Jak se jméno psalo“ na stránce rodu (hlavního i vedlejšího). Příjmení se v matrikách píše různě (Frydrych / Fridrich /
+  Friedrich); do sloupce „psáno“ vždy přesně podle snímku, na webu a v `P` drž podobu, kterou používá rodina.
+  `npm run data` vypíše `POZOR: rod … není v tabulce pravopisu`, když má člen rodu s tímto příjmením zápis, který
+  v tabulce chybí – doplň řádek hned při zápisu nálezu.
 - `SIDE` – sourozenci a další příbuzní: `dict(k=<číslo předka>, n="Josef Novák (1865–1920)", t="text", r=[klíče])`.
 - `ISSUES` – dvojice `("Otázka", "Vyřešeno: … / Hypotéza: … / Otevřené: …")` → stránka „Co hledáme“ (vyřešené se skryjí).
   Jde na web – nepiš sem citlivé věci (příčiny úmrtí, rodinné spory) bez souhlasu.
@@ -93,6 +101,9 @@ Viz `web.md`.
 - `zajimavosti.md` – `## Nadpis` + text, odkazy `[Jméno](/osoba/<slug>/)`.
 - `pribeh.md` – „Příběh <hlavního rodu>“: frontmatter `title`, `lead` + kapitoly `##`; když soubor neexistuje,
   položka menu se skryje. Jak psát: `pribehy.md`.
+- `pribehy/<slug rodu>.md` – příběh jednoho rodu (i vedlejšího), stejný formát jako `pribeh.md`. Slug = název rodu
+  bez diakritiky (`Hübnerové` → `pribehy/hubnerove.md`). Web z něj udělá stránku `/pribehy/<slug>/` a na stránce rodu
+  tlačítko „Přečíst příběh rodu“; z hlavního příběhu na něj odkazuj `[Příběh Hübnerových](/pribehy/hubnerove/)`.
 - Poznámky pro Clauda v markdownu piš jako `<!-- … -->` – na web nejdou.
 - `archivni_dotazy.md`, `udaje_od_rodiny.md` – volný text.
 

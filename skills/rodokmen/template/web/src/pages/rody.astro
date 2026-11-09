@@ -1,8 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import PersonLink from '../components/PersonLink.astro';
-import { lines, people, href, linesTitle } from '../lib/data.js';
+import { lines, sublines, people, href, linesTitle } from '../lib/data.js';
 const list = Object.values(lines).sort((a, b) => a.k - b.k);
+const subList = Object.values(sublines).sort((a, b) => a.k - b.k);
 ---
 <Base title="Rody">
   <h1>{linesTitle(list.length)}</h1>
@@ -14,7 +15,7 @@ const list = Object.values(lines).sort((a, b) => a.k - b.k);
       <a class="card line-card card-link" style={`--c:${l.color}`} href={href.line(l.slug)}>
         <h3>{l.name}</h3>
         <p class="small">{l.desc}</p>
-        <p class="small muted">{l.people.length} předků · začíná u {people[l.root].name}</p>
+        <p class="small muted">{l.people.length} předků · začíná u {people[l.root].name}{l.story && ' · s vyprávěným příběhem'}</p>
       </a>
     ))}
   </div>
@@ -24,8 +25,23 @@ const list = Object.values(lines).sort((a, b) => a.k - b.k);
       <a class="card line-card card-link" style={`--c:${l.color}`} href={href.line(l.slug)}>
         <h3>{l.name}</h3>
         <p class="small">{l.desc}</p>
-        <p class="small muted">{l.people.length} předků · začíná u {people[l.root].name}</p>
+        <p class="small muted">{l.people.length} předků · začíná u {people[l.root].name}{l.story && ' · s vyprávěným příběhem'}</p>
       </a>
     ))}
   </div>
+  {subList.length > 0 && (
+    <>
+      <h2>Vedlejší rody</h2>
+      <p class="small muted">Rody, které začínají u vzdálenějšího předka – jsou součástí některého z rodů výše.</p>
+      <div class="grid2">
+        {subList.map((l) => (
+          <a class="card line-card card-link" style={`--c:${l.color}`} href={href.line(l.slug)}>
+            <h3>{l.name}</h3>
+            <p class="small">{l.desc}</p>
+            <p class="small muted">{l.people.length} předků · začíná u {people[l.root].name}{l.parent && lines[l.parent] && ` · v rodu ${lines[l.parent].name}`}</p>
+          </a>
+        ))}
+      </div>
+    </>
+  )}
 </Base>
