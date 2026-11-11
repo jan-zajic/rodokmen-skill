@@ -16,6 +16,10 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - Tabulka „Jak se jméno psalo“ na stránce rodu (`PRAVOPIS` v `osoby.py`); `npm run data` upozorní na zápis člena rodu,
   který v tabulce chybí.
 - Stránka hlavního rodu (`web.json` → `pribeh.rod`) má tlačítko „Přečíst příběh“ na hlavní příběh (stejný cíl jako menu).
+- Příběhy už nezastarávají potichu: `tools/pribehy.py` ukáže u hlavního i vedlejších příběhů doložené předky,
+  které text nezmiňuje, a předky, kteří od posledního potvrzení přibyli nebo se jim změnily údaje; `pribehy.py hotovo
+  <slug>` příběh potvrdí (otisk v `data/pribehy/otisky.json`). `kontrola.py` to hlásí jako „PŘÍBĚH: …“ a smyčka
+  hledání má nový krok 8 – příběh doplnit ještě v tomtéž kole (`reference/pribehy.md`, „Udržuj příběhy aktuální“).
 
 **Opravy**
 - `mista.py pridej` s jiným dotazem u už přidaného místa zahodí staré souřadnice a dohledá je znovu – dřív zůstal

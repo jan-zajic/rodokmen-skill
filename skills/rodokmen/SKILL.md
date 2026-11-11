@@ -155,6 +155,11 @@ Základní smyčka pro každou osobu:
    vyprávění), zapiš ho do výsledku v deníku se snímkem – je to jen stopa, ne doklad. Když se hledání zasekne,
    projdi deník právě kvůli takovým stopám.
 7. Spusť `python3 -I tools/kontrola.py` a oprav chyby.
+8. **Příběhy drž aktuální.** Přibyl-li doložený předek v rodu, který má příběh (`data/pribeh.md`,
+   `data/pribehy/<slug>.md`), nebo se o předkovi výrazně změnilo, co víme (rodiče, roky, opravené čtení,
+   vyřešená otázka z „Kde hledat dál“), doplň příběh **ještě v tomtéž kole** a potvrď ho
+   `python3 -I tools/pribehy.py hotovo <slug>`. `kontrola.py` takové příběhy hlásí („PŘÍBĚH: …“), podrobně
+   `tools/pribehy.py` (`reference/pribehy.md`, „Udržuj příběhy aktuální“).
 
 Pravidla, která chrání kvalitu (naučená na skutečném projektu):
 - **Než něco ohlásíš jako nové, prohledej** `data/osoby.py`, `data/zaznamy.json` a `data/research_log.md`
@@ -236,6 +241,9 @@ Podrobně `reference/pribehy.md`. Tohle je to, co rodina na webu čte nejradši,
 - **„Příběh <hlavního rodu>“** (Příběh Novákových): jakmile má hlavní rod ~5 doložených generací, nabídni ho.
   Koncept napiš **do chatu** ke schválení, pak `data/pribeh.md` a v `web.json` menu, tlačítko a úvod.
   Je hlavní věcí na úvodní stránce webu.
+- **Příběhy nikdy nezastarávají potichu**: hlavní i vedlejší příběhy doplňuj průběžně s každým novým doloženým
+  předkem nebo podstatnou změnou (smyčka Fáze 2, krok 8). Hlídá to `tools/pribehy.py`; po aktualizaci textu
+  `pribehy.py hotovo <slug>`. Po větším kole projdi i úvod webu (`web.json`) a `lead` příběhů.
 
 ## Fáze 4 – Web
 Podrobně `reference/web.md`. Ve zkratce:
@@ -320,11 +328,12 @@ Nedělej to pořád. Postup:
 | `mapa_knihy.py aron/pf/ahmp <kniha> <od> <do> [krok]`, `--vedle --ostre --vyrez …`, `soubory …` | mapa knihy (horní pruhy snímků pod sebou) a montáž sloupce se jmény vedle sebe – orientace v knihách po vsích (`matriky.md`) |
 | `overit.py <snímek> x0,y0,x1,y1 <prefix> [--kontrast]` | zápis na dvě čitelné poloviny – ověření čtení (souřadnice = zlomky 0–1) |
 | `napady.py` | náměty na zajímavosti z dat |
+| `pribehy.py` / `pribehy.py <slug>` / `pribehy.py hotovo <slug>\|vse` | aktuálnost příběhů: koho text nezmiňuje, kdo přibyl nebo se změnil od posledního potvrzení |
 | `vyrez.py <stránka.jpg> <klíč> x0,y0,x1,y1 [--kontrast]` | výřez do `zdroje/` a `vyrezy/` (`--kontrast` u vybledlého písma) |
 | `ramecek.py <klíč> x0,y0,x1,y1` | rámeček čteného místa + kontrolní obrázek |
 | `mista.py pridej "Obec"` / `mista.py` | místa pro mapu (souřadnice z OpenStreetMap) |
 | `zapis.py <soubor> <klíč> <vstup.json> [--sloucit]` | přidá / změní položku v `zaznamy`, `svazky`, `prepisy`… beze změny formátu |
 | `slusne.py <skript.py> / curl … / bash x.sh / stav` | brzda proti zablokování archivem – vlastní skripty a curl spouštěj přes ni |
-| `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |
+| `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu, kdy psát příběh a zastaralé příběhy |
 | `export_web.py` | data → web (volá ho `npm run data`) |
 | `fan_chart.py vystupy/` | vějíř předků jako plakát k tisku |

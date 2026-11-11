@@ -79,3 +79,32 @@ Když má i jiný rod dost materiálu (3+ doložené generace, řemeslo, dům, z
 kapitoly `##`). Postup stejný – koncept nejdřív do chatu, po schválení uložit. Web přidá stránku `/pribehy/<slug>/`
 a tlačítko na stránce rodu. V hlavním příběhu pak rod shrň v pár větách a odkaž na jeho příběh, ať se texty neopakují.
 Funguje i pro vedlejší rody (`LINES` 16+, viz `data.md`). Po přejmenování rodu přejmenuj i soubor.
+
+## Udržuj příběhy aktuální
+Příběh není hotový napořád: každé kolo hledání může přidat předka nebo změnit, co o něm víme. Skutečná chyba:
+příběhy rodů psané v listopadu zůstaly u tří generací, i když data za pár dní sahala o čtyři generace dál a v
+„Kde hledat dál“ visely úkoly, které už byly hotové. Rodina pak na webu čte zastaralý text.
+
+**Kdy aktualizovat** – hned v tomtéž kole, ne „někdy na konci“:
+- do rodu přibyl **doložený předek** (`doc`), nebo se `prob` změnil na `doc`;
+- u stávajícího předka se **výrazně změnily údaje**: rok narození nebo úmrtí, rodiče, místo, povolání, oprava
+  čtení (jméno „Marie“ se ukázalo jako „Léta Páně“), vyvrácená nebo potvrzená hypotéza;
+- vyřešila se otázka z části „Kde hledat dál“ (vyřeš ji i v textu, ne jen v `ISSUES`).
+
+Týká se to **hlavního příběhu** (`data/pribeh.md`) i **příběhů dalších rodů** (`data/pribehy/<slug>.md`);
+hlavní příběh doplň aspoň shrnutím a odkazem, když se změna týká rodu, který má vlastní příběh.
+
+**Jak to hlídat – `tools/pribehy.py`:**
+- `python3 -I tools/pribehy.py` vypíše u každého příběhu doložené předky, které text nezmiňuje (ani odkazem
+  `/osoba/…`, ani jménem a příjmením u sebe), a předky, kteří od posledního potvrzení přibyli nebo se jim změnily
+  údaje (jméno, roky, fakta, zápisy, stav). `pribehy.py <slug>` jen pro jeden příběh (`hlavni` = `pribeh.md`).
+  Pro odkazy používá slugy z posledního exportu webu – spusť předtím `npm run data`.
+- Po úpravě textu: `python3 -I tools/pribehy.py hotovo <slug>` (nebo `vse`). Uloží „otisk“ údajů rodu do
+  `data/pribehy/otisky.json` (patří do gitu). `kontrola.py` pak u potvrzeného příběhu hlásí jen nové a změněné
+  předky; předky, které jsi vynechal záměrně (prababička bez dalších údajů), znovu nehlásí.
+- `kontrola.py` hlásí „PŘÍBĚH: …“ po každém kole – nenech to viset. Krátký dovětek nebo nová kapitola stačí;
+  větší přestavbu (nová generace na začátku, jiný závěr) ukaž uživateli předem v chatu jako u nového příběhu.
+
+**Co při aktualizaci zkontrolovat:** nejstarší známý předek a počty generací (úvod, `lead`, `web.json` → `uvod`),
+odkazy na osoby (slug se mění s rokem narození – `npm run data` hlásí nefunkční odkazy), „Kde hledat dál“
+(hotové úkoly pryč, nové otevřené otázky dovnitř) a soulad s poznámkami osob a s `HYPOTEZY`.

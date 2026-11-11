@@ -262,6 +262,19 @@ def main():
             warn.append(f"rod {jmeno} má už {n} generací – je čas napsat příběh rodu "
                         f"(data/pribeh.md, reference/pribehy.md); koncept nejdřív ukaž uživateli v chatu")
 
+    nastroj = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pribehy.py")
+    if os.path.exists(nastroj):   # aktuálnost příběhů rodů (tools/pribehy.py, reference/pribehy.md)
+        try:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("pribehy", nastroj)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            warn.extend(mod.souhrn())
+        except SystemExit:
+            pass
+        except Exception as e:  # noqa: BLE001
+            warn.append(f"tools/pribehy.py selhal ({e}) – aktuálnost příběhů nezkontrolována")
+
     log = os.path.join(DATA, "research_log.md")
     rows = sum(1 for l in open(log, encoding="utf-8") if re.match(r"^\| \d+ \|", l)) if os.path.exists(log) else 0
     print(f"{len(P)} osob, {len(zaz)} zápisů, {len(svazky)} svazků, {rows} řádků deníku")
