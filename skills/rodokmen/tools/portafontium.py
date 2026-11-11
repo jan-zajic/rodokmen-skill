@@ -18,6 +18,8 @@ Snímek = pořadové číslo náhledu v prohlížeči portálu (1, 2, 3…). Str
 Ber ohled na server: stahuj jen snímky, které čteš.
 """
 import html, http.client, json, os, re, ssl, sys, time, unicodedata, urllib.error, urllib.parse, urllib.request
+if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):   # nápověda místo pádu
+    sys.exit(__doc__.strip())
 import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__))); import slusne  # noqa: E402 – brzda proti zablokování archivem (společný limit dotazů, tools/slusne.py)
 import cache  # noqa: E402 – sdílená mezipaměť obrázků (tools/cache.py): výřez a náhled z uloženého snímku
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
@@ -238,7 +240,7 @@ def zkrat(s, n=300):
 def svazek(kniha):
     kniha, fields, scans, _ = info(kniha)
     path = os.path.join(ROOT, "data", "svazky.json")
-    d = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+    d = json.load(open(path, encoding="utf-8-sig")) if os.path.exists(path) else {}
     sig = fields.get("Signatura", kniha)
     popis = "; ".join(x for x in (fields.get("Místo", ""), fields.get("Text desky", "")) if x)
     d[f"pf_{kniha}"] = {"archiv": "SOA Plzeň – Sbírka matrik západních Čech", "portal": "Porta fontium",

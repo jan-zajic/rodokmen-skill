@@ -12,6 +12,8 @@ Jsou to jen NÁMĚTY z dat – každý ověř v zápisu (data bývají nejistá)
 jako krátký příběh (viz reference/pribehy.md).
 """
 import datetime, os, re, sys
+if sys.argv[1:2] in (["-h"], ["--help"]):   # nápověda místo pádu
+    sys.exit(__doc__.strip())
 from collections import defaultdict
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
@@ -26,7 +28,7 @@ EPIDEMIE = {1771: "hladomor", 1772: "hladomor a tyfus", 1805: "tyfus", 1831: "ch
 
 def load():
     ns = {}
-    exec(open(os.path.join(ROOT, "data", "osoby.py"), encoding="utf-8").read(), ns)
+    exec(open(os.path.join(ROOT, "data", "osoby.py"), encoding="utf-8-sig").read(), ns)
     return ns["P"], ns.get("LINES", {}), ns.get("SAME", {})
 
 

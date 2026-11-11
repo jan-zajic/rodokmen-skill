@@ -46,12 +46,12 @@ def nacti():
     if not os.path.exists(os.path.join(DATA, "osoby.py")):
         sys.exit("Spusť z kořene projektu rodokmenu (chybí data/osoby.py).")
     ns = {}
-    exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8").read(), ns)
+    exec(open(os.path.join(DATA, "osoby.py"), encoding="utf-8-sig").read(), ns)
     web = {}
     p = os.path.join(DATA, "web.json")
     if os.path.exists(p):
         try:
-            web = json.load(open(p, encoding="utf-8"))
+            web = json.load(open(p, encoding="utf-8-sig"))
         except Exception:  # noqa: BLE001
             web = {}
     return ns.get("P", {}), ns.get("LINES", {}), ns.get("SAME", {}), web
@@ -94,7 +94,7 @@ def slugy_webu():
     """{číslo osoby: slug} z posledního exportu webu (web/src/data/site.json), když existuje."""
     p = os.path.join(ROOT, "web", "src", "data", "site.json")
     try:
-        lidé = json.load(open(p, encoding="utf-8")).get("people", {})
+        lidé = json.load(open(p, encoding="utf-8-sig")).get("people", {})
         return {v["k"]: s for s, v in lidé.items() if isinstance(v, dict) and "k" in v}
     except Exception:  # noqa: BLE001
         return {}
@@ -123,14 +123,14 @@ def zminen(n, p, text_ascii, slugy):
 def stav(vyber=None, podrobne=False):
     """Vrátí [(klíč, název, nezmínění[], změnění[], nový_otisk{})] a vypíše přehled."""
     P, LINES, SAME, web = nacti()
-    ot = json.load(open(OTISKY, encoding="utf-8")) if os.path.exists(OTISKY) else {}
+    ot = json.load(open(OTISKY, encoding="utf-8-sig")) if os.path.exists(OTISKY) else {}
     vysledky = []
     slugy = slugy_webu()
     vsechny = pribehy(P, LINES, web)
     for klic, nazev, soubor, k in vsechny:
         if vyber and klic not in vyber:
             continue
-        t_ascii = ascii_low(open(soubor, encoding="utf-8").read())
+        t_ascii = ascii_low(open(soubor, encoding="utf-8-sig").read())
         # předky vedlejšího rodu s vlastním příběhem hlídá jeho příběh, ne příběh nadřazeného rodu
         vlastni = set().union(*[clenove(P, SAME, k2) for _, _, _, k2 in vsechny
                                 if k2 > k and k2 >> (gen(k2) - gen(k)) == k] or [set()])
