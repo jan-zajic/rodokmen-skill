@@ -99,6 +99,8 @@ hlavní příběh doplň aspoň shrnutím a odkazem, když se změna týká rodu
   `/osoba/…`, ani jménem a příjmením u sebe), a předky, kteří od posledního potvrzení přibyli nebo se jim změnily
   údaje (jméno, roky, fakta, zápisy, stav). `pribehy.py <slug>` jen pro jeden příběh (`hlavni` = `pribeh.md`).
   Pro odkazy používá slugy z posledního exportu webu – spusť předtím `npm run data`.
+  Předky vedlejšího rodu (`LINES` 16+), který má vlastní příběh, hlídá jen jeho příběh – v nadřazeném stačí
+  shrnutí a odkaz.
 - Po úpravě textu: `python3 -I tools/pribehy.py hotovo <slug>` (nebo `vse`). Uloží „otisk“ údajů rodu do
   `data/pribehy/otisky.json` (patří do gitu). `kontrola.py` pak u potvrzeného příběhu hlásí jen nové a změněné
   předky; předky, které jsi vynechal záměrně (prababička bez dalších údajů), znovu nehlásí.

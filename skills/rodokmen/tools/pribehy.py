@@ -126,11 +126,15 @@ def stav(vyber=None, podrobne=False):
     ot = json.load(open(OTISKY, encoding="utf-8")) if os.path.exists(OTISKY) else {}
     vysledky = []
     slugy = slugy_webu()
-    for klic, nazev, soubor, k in pribehy(P, LINES, web):
+    vsechny = pribehy(P, LINES, web)
+    for klic, nazev, soubor, k in vsechny:
         if vyber and klic not in vyber:
             continue
         t_ascii = ascii_low(open(soubor, encoding="utf-8").read())
-        cl = clenove(P, SAME, k)
+        # předky vedlejšího rodu s vlastním příběhem hlídá jeho příběh, ne příběh nadřazeného rodu
+        vlastni = set().union(*[clenove(P, SAME, k2) for _, _, _, k2 in vsechny
+                                if k2 > k and k2 >> (gen(k2) - gen(k)) == k] or [set()])
+        cl = [n for n in clenove(P, SAME, k) if n not in vlastni]
         nezm = [n for n in cl if P[n].get("st") == "doc" and not zminen(n, P[n], t_ascii, slugy)]
         staré = ot.get(klic, {}).get("osoby")
         zmen = [] if staré is None else [n for n in cl if staré.get(str(n)) != otisk(P[n])]   # i noví (bez otisku)

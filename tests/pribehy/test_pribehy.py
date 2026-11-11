@@ -85,6 +85,16 @@ try:
     pust(tmp, "hotovo", "hlavni")
     k = pust(tmp, nastroj="kontrola.py")
     over("po dalším potvrzení klid", "PŘÍBĚH" not in k, k)
+
+    # vedlejší rod 17 (Kubíkové) s vlastním příběhem: jeho předky hlídá jen jeho příběh
+    P3 = dict(P2)
+    P3[34] = dict(n="Josef Kubík", y="", st="doc", f=["sedlák"])
+    zapis(os.path.join(tmp, "data", "osoby.py"), osoby(P3).replace("9: ('Dvořákové'", "17: ('Kubíkové', 'Sedláci.'), 9: ('Dvořákové'"))
+    zapis(os.path.join(tmp, "data", "pribehy", "kubikove.md"),
+          "---\ntitle: Příběh Kubíků\n---\n\nAnna Kubíková z Holic.\n")
+    k = pust(tmp, nastroj="kontrola.py")
+    over("Josef Kubík hlášen jen u příběhu Kubíků", "příběh Kubíkové" in k and "34 Josef Kubík" in k
+         and "34 Josef Kubík" not in k.split("příběh Kubíkové")[0], k)
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 
