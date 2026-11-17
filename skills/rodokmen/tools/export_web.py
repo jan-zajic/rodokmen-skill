@@ -401,8 +401,10 @@ def main():
     stats = dict(ancestors=len(known), documented=sum(p["st"] == "doc" for p in known), records=len(records),
                  generations=max(p["gen"] for p in people.values()) + 1)
     hypotheses = [dict(line=h.get("rod"), title=h.get("nadpis", "Hypotéza"), text=h.get("text", ""),
-                       items=[dict(name=a, text=b) for a, b in h.get("polozky", [])],
-                       records=[r for r in h.get("zaznamy", []) if r in recs]) for h in ns["HYPOTEZY"]]
+                       items=[dict(name=x[0], text=x[1]) for x in h.get("polozky", [])
+                              if isinstance(x, (tuple, list)) and len(x) == 2],
+                       records=[r for r in h.get("zaznamy", []) if r in recs])
+                  for h in ns["HYPOTEZY"] if isinstance(h, dict)]   # jiný zápis hlásí kontrola.py
 
     has_story = os.path.exists(os.path.join(DATA, "pribeh.md"))
     # příběhy jednotlivých rodů: data/pribehy/<slug rodu>.md → stránka /pribehy/<slug>/ a odkaz ze stránky rodu
@@ -412,7 +414,9 @@ def main():
     public_cfg["maPribeh"] = has_story
     site = dict(config=public_cfg, places=places, root=slugs[1], aliases={a: slugs[a] for a in SAME}, people=people,
                 families=families, records=records, lines=lines, sublines=sublines,
-                issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
+                issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES
+                        if isinstance(i, str) or (isinstance(i, (tuple, list)) and len(i) == 2)],   # jiné hlásí kontrola.py
+                stats=stats, hypotheses=hypotheses,
                 docs=[dict(img=d["img"], caption=d.get("popis", ""), people=[slugs[k] for k in d.get("osoby", []) if k in slugs])
                       for d in docs_cfg if os.path.exists(os.path.join(VYREZY, d["img"] + ".jpg"))])
 

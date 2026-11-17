@@ -3,7 +3,7 @@
 Čti při zakládání projektu nebo když nějaký nástroj chybí či padá na instalaci.
 
 ## Nástroje
-Zkontroluj: `python3 --version` (≥ 3.9), `node --version` (≥ 20), `magick -version` (ImageMagick 7; je-li jen verze 6
+Zkontroluj: `python3 --version` (≥ 3.9), `node --version` (≥ 22.12, kvůli Astru 7), `magick -version` (ImageMagick 7; je-li jen verze 6
 s příkazem `convert`, nástroje ji mimo Windows použijí samy), `git --version`.
 Co chybí, pomoz nainstalovat. Instalace systémových věcí nech uživatele potvrdit; interaktivní příkazy mu dej
 s předponou `!`, ať je spustí sám.
@@ -47,7 +47,7 @@ Bez prohlížeče ať uživatel posílá snímky obrazovky.
 ## Založení projektu
 1. Zeptej se, kde má projekt být (navrhni `~/Rodokmen`), a založ ho: `python3 -I SKILL_DIR/tools/novy_projekt.py <složka>`.
    Chce-li uživatel nejdřív vidět, jak web vypadá, založ vedle ukázku: `… novy_projekt.py ~/Rodokmen-ukazka --ukazka`,
-   pak `cd web && npm install && npm run nahled` a pošli mu odkaz http://localhost:4321.
+   pak `cd web && npm install && npm run nahled` (na pozadí) a pošli mu odkaz http://localhost:4321.
 2. Zeptej se, jestli zapnout **hlídač sítě** (`… novy_projekt.py <složka> --hlidac`, vypnutí `--bez-hlidace`).
    Vysvětli jednou větou: archivy blokují IP adresu po sérii rychlých dotazů. Hlídač je malý skript v projektu
    (`tools/hlidac_site.py`), který před každým příkazem zkontroluje, že stahování jde přes brzdu, a jinak ho zamítne.
