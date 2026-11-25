@@ -41,7 +41,8 @@ Litoměřice). Když předci žili tam a nemáš nástroje `mcp__…playwright�
 `/plugin install playwright@claude-plugins-official` (dej ho uživateli s `!` jako
 `claude plugin install playwright@claude-plugins-official`), pak restart Claude Code. Jinou možností je Claude in Chrome
 (`/chrome`); postupy v `portaly.md` jsou vyzkoušené hlavně s Playwrightem (snímek obrazovky do souboru),
-pro eBadatelnu je tam i postup přes Claude in Chrome (snímek vykreslit přes okno, výřez ze snímků obrazovky).
+pro eBadatelnu je tam i postup přes Claude in Chrome (snímek vykreslit přes okno, výřez ze snímků obrazovky); **ZA Opava
+jde jen v Claude in Chrome** (Playwright tamní ochrana proti robotům od 11/2026 nepustí).
 Bez prohlížeče ať uživatel posílá snímky obrazovky.
 
 ## Založení projektu
